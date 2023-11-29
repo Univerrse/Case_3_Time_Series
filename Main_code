@@ -1,1 +1,34 @@
-cat("Print World")
+library(statespacer)
+library(ggplot2)
+library(gridExtra)
+
+#take data from the package
+ds <- FedYieldCurve
+
+#Create graphs with ggplot for each sequence
+M3_graph <- ggplot(ds, aes(x = Month, y = M3)) +
+  geom_line() +
+  labs(title = "Simple Scatter Plot", x = "Month", y = "M3")
+M6_graph <- ggplot(ds, aes(x = Month, y = M6)) +
+  geom_line() +
+  labs(title = "Simple Scatter Plot", x = "Month", y = "M6")
+Y1_graph <- ggplot(ds, aes(x = Month, y = Y1)) +
+  geom_line() +
+  labs(title = "Simple Scatter Plot", x = "Month", y = "Y1")
+Y2_graph <- ggplot(ds, aes(x = Month, y = Y2)) +
+  geom_line() +
+  labs(title = "Simple Scatter Plot", x = "Month", y = "Y2")
+Y3_graph <- ggplot(ds, aes(x = Month, y = Y3)) +
+  geom_line() +
+  labs(title = "Simple Scatter Plot", x = "Month", y = "Y3")
+Y5_graph <- ggplot(ds, aes(x = Month, y = Y5)) +
+  geom_line() +
+  labs(title = "Simple Scatter Plot", x = "Month", y = "Y5")
+Y7_graph <- ggplot(ds, aes(x = Month, y = Y7)) +
+  geom_line() +
+  labs(title = "Simple Scatter Plot", x = "Month", y = "Y7")
+Y10_graph <- ggplot(ds, aes(x = Month, y = Y10)) +
+  geom_line() +
+  labs(title = "Simple Scatter Plot", x = "Month", y = "Y10")
+#Show multiple graphs together
+grid.arrange(M3_graph,M6_graph,Y1_graph,Y2_graph,Y3_graph,Y5_graph,Y7_graph,Y10_graph)
