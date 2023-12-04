@@ -1,0 +1,22 @@
+rm(list=ls()) # removing everything in your working memory
+library(statespacer)
+library(ggplot2)
+library(gridExtra)
+
+#take data from the package
+ds <- FedYieldCurve
+
+#plot all data together in a graph
+all_graph<-ggplot(ds, aes(x = Month, y= Interest)) +
+  geom_line(aes(y = M3, color="M3")) +
+  geom_line(aes(y = M6, color = "M6")) +
+  geom_line(aes(y = Y1, color = "Y1")) +
+  geom_line(aes(y = Y2, color = "Y2")) +
+  geom_line(aes(y = Y3, color = "Y3")) +
+  geom_line(aes(y = Y5, color = "Y5")) +
+  geom_line(aes(y = Y7, color = "Y7")) +
+  geom_line(aes(y = Y10, color = "Y10"))
+grid.arrange(all_graph)
+ 
+
+
