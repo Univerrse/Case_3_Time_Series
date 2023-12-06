@@ -1,55 +1,84 @@
-rm(list=ls()) # removing everything in your working memory
-library(statespacer)
-library(ggplot2)
-library(gridExtra)
-
-#take data from the package
-ds <- FedYieldCurve
-
-#Create graphs with ggplot for each sequence
-M3_graph <- ggplot(ds, aes(x = Month, y = M3)) +
-  geom_line() +
-  labs(title = "M3", x = "Month", y = "Interest")
-M6_graph <- ggplot(ds, aes(x = Month, y = M6)) +
-  geom_line() +
-  labs(title = "M6", x = "Month", y = "Interest")
-Y1_graph <- ggplot(ds, aes(x = Month, y = Y1)) +
-  geom_line() +
-  labs(title = "Y1", x = "Month", y = "Interest")
-Y2_graph <- ggplot(ds, aes(x = Month, y = Y2)) +
-  geom_line() +
-  labs(title = "Y2", x = "Month", y = "Interest")
-Y3_graph <- ggplot(ds, aes(x = Month, y = Y3)) +
-  geom_line() +
-  labs(title = "Y3", x = "Month", y = "Interest")
-Y5_graph <- ggplot(ds, aes(x = Month, y = Y5)) +
-  geom_line() +
-  labs(title = "Y5", x = "Month", y = "Interest")
-Y7_graph <- ggplot(ds, aes(x = Month, y = Y7)) +
-  geom_line() +
-  labs(title = "Y7", x = "Month", y = "Interest")
-Y10_graph <- ggplot(ds, aes(x = Month, y = Y10)) +
-  geom_line() +
-  labs(title = "Y10", x = "Month", y = "Interest")
-
-#Show multiple graphs together
-grid.arrange(M3_graph,M6_graph,Y1_graph,Y2_graph,Y3_graph,Y5_graph,Y7_graph,Y10_graph)
-##From this plot, easy to see that non of the series are stationary.
-##However, they do seem to follow the same path
-##Check this by plotting all data together in a graph:
-
-
-#plot all data together in a graph
-all_graph<-ggplot(ds, aes(x = Month, y= Interest)) +
-  geom_line(aes(y = M3, color="M3")) +
-  geom_line(aes(y = M6, color = "M6")) +
-  geom_line(aes(y = Y1, color = "Y1")) +
-  geom_line(aes(y = Y2, color = "Y2")) +
-  geom_line(aes(y = Y3, color = "Y3")) +
-  geom_line(aes(y = Y5, color = "Y5")) +
-  geom_line(aes(y = Y7, color = "Y7")) +
-  geom_line(aes(y = Y10, color = "Y10"))
-grid.arrange(all_graph)
- 
+  rm(list=ls()) # removing everything in your working memory
+  library(statespacer)
+  library(ggplot2)
+  library(gridExtra)
+  library(urca)
+  library(bootUR)
+  
+  #take data from the package
+  ds <- FedYieldCurve
+  
+  #Create graphs with ggplot for each sequence
+  M3_graph <- ggplot(ds, aes(x = Month, y = M3)) +
+    geom_line() +
+    labs(title = "M3", x = "Month", y = "Interest")
+  M6_graph <- ggplot(ds, aes(x = Month, y = M6)) +
+    geom_line() +
+    labs(title = "M6", x = "Month", y = "Interest")
+  Y1_graph <- ggplot(ds, aes(x = Month, y = Y1)) +
+    geom_line() +
+    labs(title = "Y1", x = "Month", y = "Interest")
+  Y2_graph <- ggplot(ds, aes(x = Month, y = Y2)) +
+    geom_line() +
+    labs(title = "Y2", x = "Month", y = "Interest")
+  Y3_graph <- ggplot(ds, aes(x = Month, y = Y3)) +
+    geom_line() +
+    labs(title = "Y3", x = "Month", y = "Interest")
+  Y5_graph <- ggplot(ds, aes(x = Month, y = Y5)) +
+    geom_line() +
+    labs(title = "Y5", x = "Month", y = "Interest")
+  Y7_graph <- ggplot(ds, aes(x = Month, y = Y7)) +
+    geom_line() +
+    labs(title = "Y7", x = "Month", y = "Interest")
+  Y10_graph <- ggplot(ds, aes(x = Month, y = Y10)) +
+    geom_line() +
+    labs(title = "Y10", x = "Month", y = "Interest")
+  
+  #Show multiple graphs together
+  grid.arrange(M3_graph,M6_graph,Y1_graph,Y2_graph,Y3_graph,Y5_graph,Y7_graph,Y10_graph)
+  ##From this plot, easy to see that non of the series are stationary.
+  ##However, they do seem to follow the same path
+  ##Check this by plotting all data together in a graph:
+  
+  
+  #plot all data together in a graph
+  all_graph<-ggplot(ds, aes(x = Month, y= Interest)) +
+    geom_line(aes(y = M3, color="M3")) +
+    geom_line(aes(y = M6, color = "M6")) +
+    geom_line(aes(y = Y1, color = "Y1")) +
+    geom_line(aes(y = Y2, color = "Y2")) +
+    geom_line(aes(y = Y3, color = "Y3")) +
+    geom_line(aes(y = Y5, color = "Y5")) +
+    geom_line(aes(y = Y7, color = "Y7")) +
+    geom_line(aes(y = Y10, color = "Y10"))
+  grid.arrange(all_graph)
+  
+  library(bootUR)
+  
+  # Example function to perform ADF test using boot_adf
+  adf_test <- function(series, max_order) {
+    d <- max_order
+    while (d > 0) {
+      # Perform ADF test using boot_adf function
+      test_result <- adf(series, max_lag = d)
+      cat("P-value at differencing order", d, ":", test_result$p.value, "\n")
+      # Check if the null hypothesis of a unit root cannot be rejected
+      if (test_result$p.value <= 0.05) {
+        cat("Null hypothesis rejected for differencing order", d, "\n")
+        break
+      } else {
+        cat("Null hypothesis not rejected at differencing order", d, "\n")
+        d <- d - 1
+      }
+    }
+  }
+  
+  # Example usage
+  series <- ds$Y1
+  max_order <- 2
+  adf_test(series, max_order)
+    
+  
+  
 
 
