@@ -22,7 +22,6 @@ adf_test <- function(series, max_order) {
       cat("Null hypothesis rejected for differencing order", d, "\n")
     } else {
       cat("Null hypothesis not rejected at differencing order", d, "\n")
-      break
     }} else{
       break
     }
