@@ -1,0 +1,45 @@
+# Example function to perform ADF test using boot_adf
+adf_test <- function(series, max_order) {
+  d <- max_order
+  while (d > 0) {
+    # Perform ADF test using boot_adf function
+    test_result <- adf(diff(series,differences=d))
+    cat("P-value at differencing order", d, ":", test_result$p.value, "\n")
+    # Check if the null hypothesis of a unit root cannot be rejected
+    if (test_result$p.value <= 0.05) {
+      cat("Null hypothesis rejected for differencing order", d, "\n")
+      d <- d - 1
+    } else {
+      cat("Null hypothesis not rejected at differencing order", d, "\n")
+      break
+    }
+  }
+  if (d == 0){
+    test_result<-adf(series)
+    cat("P-value at differencing order", d, ":", test_result$p.value, "\n")
+    # Check if the null hypothesis of a unit root cannot be rejected
+    if (test_result$p.value <= 0.05) {
+      cat("Null hypothesis rejected for differencing order", d, "\n")
+    } else {
+      cat("Null hypothesis not rejected at differencing order", d, "\n")
+      break
+    }} else{
+      break
+    }
+}
+
+# Example usage
+series <- ds$Y1
+max_order <- 2
+adf_test(series, max_order)
+
+
+#perform asymptotic ADF tests for all series
+adf_test(ds$M3,2)
+adf_test(ds$M6,2)
+adf_test(ds$Y1,2)
+adf_test(ds$Y2,2)
+adf_test(ds$Y3,2)
+adf_test(ds$Y5,2)
+adf_test(ds$Y7,2)
+adf_test(ds$Y10,2)
