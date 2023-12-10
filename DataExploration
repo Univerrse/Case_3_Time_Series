@@ -55,92 +55,99 @@
   
   library(bootUR)
   
-  # Example function to perform ADF test using boot_adf
-  adf_test <- function(series, max_order) {
-    d <- max_order
-    while (d > 0) {
-      # Perform ADF test using boot_adf function
-      test_result <- adf(series, max_lag = d)
-      cat("P-value at differencing order", d, ":", test_result$p.value, "\n")
-      # Check if the null hypothesis of a unit root cannot be rejected
-      if (test_result$p.value <= 0.05) {
-        cat("Null hypothesis rejected for differencing order", d, "\n")
-        break
-      } else {
-        cat("Null hypothesis not rejected at differencing order", d, "\n")
-        d <- d - 1
-      }
-    }
-  }
-  
-  # Example usage
-  series <- ds$Y1
-  max_order <- 2
-  adf_test(series, max_order)
-
-
-#perform asymptotic ADF tests for all series
-adf_test(ds$M3,2)
-adf_test(ds$M6,2)
-adf_test(ds$Y1,2)
-adf_test(ds$Y2,2)
-adf_test(ds$Y3,2)
-adf_test(ds$Y5,2)
-adf_test(ds$Y7,2)
-adf_test(ds$Y10,2)
-
-# Example function to perform bootstrap ADF test using boot_adf
-pantula_principle_bootstrap <- function(series, max_order) {
+pantula_test <- function(series, max_order) {
   d <- max_order
   while (d > 0) {
-    # Perform ADF test using boot_adf function
-    test_result <- boot_adf(series, max_lag = d)
-    cat("P-value at differencing order", d, ":", test_result$p.value, "\n")
+    # Perform asymptotic ADF test on d'th difference series using adf function
+    test_result <- adf(diff(series,differences=d))
     # Check if the null hypothesis of a unit root cannot be rejected
     if (test_result$p.value <= 0.05) {
-      cat("Null hypothesis rejected for differencing order", d, "\n")
-      break
-    } else {
-      cat("Null hypothesis not rejected at differencing order", d, "\n")
       d <- d - 1
+    } else {
+      cat("Order of integration is", d+1, "\n")
+      break
     }
   }
+  if (d == 0){
+    test_result<-adf(series)
+    # Check if the null hypothesis of a unit root cannot be rejected
+    if (test_result$p.value <= 0.05) {
+      cat("Order of integration is", d, "\n")
+    } else {
+      cat("Order of integration is", d+1, "\n")
+    }} else{
+      break
+    }
 }
-pantula_principle_bootstrap(ds$M3,2)
-pantula_principle_bootstrap(ds$M6,2)
-pantula_principle_bootstrap(ds$Y1,2)
-pantula_principle_bootstrap(ds$Y2,2)
-pantula_principle_bootstrap(ds$Y3,2)
-pantula_principle_bootstrap(ds$Y5,2)
-pantula_principle_bootstrap(ds$Y7,2)
-pantula_principle_bootstrap(ds$Y10,2)
 
-# Example function to perform Union of Rejections test using boot_adf
-pantula_principle_unionOfRejections <- function(series, max_order) {
+
+
+pantula_test_bootstrap <- function(series, max_order) {
   d <- max_order
   while (d > 0) {
-    # Perform ADF test using boot_adf function
-    test_result <- boot_union(series, max_lag = d)
-    cat("P-value at differencing order", d, ":", test_result$p.value, "\n")
+    # Perform bootstrap ADF test on d'th difference series using boot_adf function
+    test_result <- boot_adf(diff(series,differences=d))
     # Check if the null hypothesis of a unit root cannot be rejected
     if (test_result$p.value <= 0.05) {
-      cat("Null hypothesis rejected for differencing order", d, "\n")
-      break
-    } else {
-      cat("Null hypothesis not rejected at differencing order", d, "\n")
       d <- d - 1
+    } else {
+      cat("Order of integration is", d+1, "\n")
+      break
     }
   }
+  if (d == 0){
+    test_result<-adf(series)
+    # Check if the null hypothesis of a unit root cannot be rejected
+    if (test_result$p.value <= 0.05) {
+      cat("Order of integration is", d, "\n")
+    } else {
+      cat("Order of integration is", d+1, "\n")
+    }} else{
+      break
+    }
 }
-pantula_principle_unionOfRejections(ds$M3,2)
-pantula_principle_unionOfRejections(ds$M6,2)
-pantula_principle_unionOfRejections(ds$Y1,2)
-pantula_principle_unionOfRejections(ds$Y2,2)
-pantula_principle_unionOfRejections(ds$Y3,2)
-pantula_principle_unionOfRejections(ds$Y5,2)
-pantula_principle_unionOfRejections(ds$Y7,2)
-pantula_principle_unionOfRejections(ds$Y10,2)
-  
-  
 
+pantula_test_bootstrap(ds$M3,2)
+pantula_test_bootstrap(ds$M6,2)
+pantula_test_bootstrap(ds$Y1,2)
+pantula_test_bootstrap(ds$Y2,2)
+pantula_test_bootstrap(ds$Y3,2)
+pantula_test_bootstrap(ds$Y5,2)
+pantula_test_bootstrap(ds$Y7,2)
+pantula_test_bootstrap(ds$Y10,2)
+
+
+pantula_test_UnionOfRejections <- function(series, max_order) {
+  d <- max_order
+  while (d > 0) {
+    # Perform union of rejections test on d'th difference series using union function
+    test_result <- boot_union(diff(series,differences=d))
+    # Check if the null hypothesis of a unit root cannot be rejected
+    if (test_result$p.value <= 0.05) {
+      d <- d - 1
+    } else {
+      cat("Order of integration is", d+1, "\n")
+      break
+    }
+  }
+  if (d == 0){
+    test_result<-adf(series)
+    # Check if the null hypothesis of a unit root cannot be rejected
+    if (test_result$p.value <= 0.05) {
+      cat("Order of integration is", d, "\n")
+    } else {
+      cat("Order of integration is", d+1, "\n")
+    }} else{
+      break
+    }
+}
+
+pantula_test_UnionOfRejections(ds$M3,2)
+pantula_test_UnionOfRejections(ds$M6,2)
+pantula_test_UnionOfRejections(ds$Y1,2)
+pantula_test_UnionOfRejections(ds$Y2,2)
+pantula_test_UnionOfRejections(ds$Y3,2)
+pantula_test_UnionOfRejections(ds$Y5,2)
+pantula_test_UnionOfRejections(ds$Y7,2)
+pantula_test_UnionOfRejections(ds$Y10,2)
 
