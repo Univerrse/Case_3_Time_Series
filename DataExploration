@@ -152,7 +152,34 @@ pantula_test_UnionOfRejections(ds$Y5,2)
 pantula_test_UnionOfRejections(ds$Y7,2)
 pantula_test_UnionOfRejections(ds$Y10,2)
 
-#Multiple unit root tests
-boot_panel(ds[,2:9])
-boot_ur(ds[,2:9], union = TRUE)
+#My only problem is that I dont know how much should I play with the deterministics part of the whole thing
+boot_panel(ds[,2:9], bootstrap = "MBB")
+boot_ur(ds[,2:9], bootstrap = "MBB", B = 399, union = FALSE, 
+        deterministics = "trend", detrend = "OLS")
+
+# Perform Johansen test
+johansen_test <- ca.jo(ds[,2:9], type = c("eigen", "trace"), K = 2, ecdet = "const", spec = "transitory")
+
+# Display results
+summary(johansen_test)
+# Install and load the "tsDyn" package, dont forget this
+library(tsDyn)
+
+# Specify the lag order based on the cointegration rank (use the determined rank)
+lag_order <- 1  # Adjust based on the result from the Johansen test
+
+# Estimate VECM
+vecm_model <- VECM(ds[,2:9], lag = lag_order, r = 2, include = "const", LRinclude = "none")
+
+# Display results
+summary(vecm_model)
+
+# Obtain reduced-form impulse response functions
+irf_result <- irf(vecm_model, n.ahead = 3)
+
+# Plot impulse response functions
+plot(irf_result)
+
+
+
 
