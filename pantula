@@ -1,9 +1,19 @@
+library(bootUR)
+#As explained before, from an economic point of view, 
+#we don't expect an overall trend in the interest rate
+#time series, hence, for each individual series, we only
+#include the intercept in the deterministics
+#Note that, if this was not the case, our pantula_test
+#function below needs to be changed, so that it includes
+#diffe
+
+
 pantula_test <- function(series, max_order) {
   d <- max_order
   while (d > 0) {
-    # Perform ADF test on d'th difference series using boot_adf function
-    test_result <- adf(diff(series,differences=d))
-    # Check if the null hypothesis of a unit root cannot be rejected
+    # Perform ADF test on d'th difference series using adf function
+    test_result <- adf(diff_mult(series,d), deterministics="intercept")
+    # Check if the null hypothesis of a unit root can be rejected
     if (test_result$p.value <= 0.05) {
       d <- d - 1
     } else {
@@ -12,8 +22,8 @@ pantula_test <- function(series, max_order) {
     }
   }
   if (d == 0){
-    test_result<-adf(series)
-    # Check if the null hypothesis of a unit root cannot be rejected
+    test_result<-adf(series, deterministics="intercept")
+    # Check if the null hypothesis of a unit root can be rejected
     if (test_result$p.value <= 0.05) {
       cat("Order of integration is", d, "\n")
     } else {
@@ -24,12 +34,13 @@ pantula_test <- function(series, max_order) {
 }
 
 
-#perform asymptotic ADF tests for all series
-pantula_test(ds$M3,2)
-pantula_test(ds$M6,2)
-pantula_test(ds$Y1,2)
-pantula_test(ds$Y2,2)
+#perform pantula principle for all series
+pantula_test(ds$M3,2) 
+pantula_test(ds$M6,2) 
+pantula_test(ds$Y1,2) 
+pantula_test(ds$Y2,2) 
 pantula_test(ds$Y3,2)
 pantula_test(ds$Y5,2)
 pantula_test(ds$Y7,2)
 pantula_test(ds$Y10,2)
+
