@@ -105,8 +105,11 @@ pantula_test(ds$Y10,2)
 boot_panel(ds[,2:9], bootstrap = "MBB")
 boot_ur(ds[,2:9], B = 399)
 
-# Perform Johansen test
+# Perform the trace Johansen test
 johansen_test <- ca.jo(ds[,2:9], type = "trace", K = 2, ecdet = "const", spec = "transitory")
+
+# Perform the eigen Johansen test
+johansen_test <- ca.jo(ds[,2:9], type = "eigen", K = 2, ecdet = "const", spec = "transitory")
 
 # Display results
 summary(johansen_test)
