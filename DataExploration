@@ -152,10 +152,9 @@ pantula_test_UnionOfRejections(ds$Y5,2)
 pantula_test_UnionOfRejections(ds$Y7,2)
 pantula_test_UnionOfRejections(ds$Y10,2)
 
-#My only problem is that I dont know how much should I play with the deterministics part of the whole thing
-boot_panel(ds[,2:9], bootstrap = "MBB")
-boot_ur(ds[,2:9], bootstrap = "MBB", B = 399, union = FALSE, 
-        deterministics = "trend", detrend = "OLS")
+#Multiple unit root test
+boot_panel(ds[,2:9])
+boot_ur(ds[,2:9], union = TRUE, deterministics = "trend", detrend = "OLS")
 
 # Perform Johansen test
 johansen_test <- ca.jo(ds[,2:9], type = c("eigen", "trace"), K = 2, ecdet = "const", spec = "transitory")
