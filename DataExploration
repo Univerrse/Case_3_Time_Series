@@ -153,8 +153,7 @@ pantula_test_UnionOfRejections(ds$Y7,2)
 pantula_test_UnionOfRejections(ds$Y10,2)
 
 #Multiple unit root test
-boot_panel(ds[,2:9])
-boot_ur(ds[,2:9], union = TRUE, deterministics = "trend", detrend = "OLS")
+boot_ur(ds[,2:9], union = TRUE)
 
 # Perform Johansen test
 johansen_test <- ca.jo(ds[,2:9], type = c("eigen", "trace"), K = 2, ecdet = "const", spec = "transitory")
