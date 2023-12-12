@@ -100,3 +100,44 @@ pantula_test(ds$Y3,2)
 pantula_test(ds$Y5,2)
 pantula_test(ds$Y7,2)
 pantula_test(ds$Y10,2)
+
+#Multiple or Panel Unit Root Tests
+boot_panel(ds[,2:9], bootstrap = "MBB")
+boot_ur(ds[,2:9], B = 399)
+
+# Perform Johansen test
+johansen_test <- ca.jo(ds[,2:9], type = "trace", K = 2, ecdet = "const", spec = "transitory")
+
+# Display results
+summary(johansen_test)
+#Code to determine the lag-order of the VECM model
+VARselect(ds[,2:9], lag.max = 10, type = "both")
+# Specify the lag order based on the AIC criterion in the VARselect function
+lag_order <- 2
+
+# Estimate VECM/We have the lag-values from the previous test, r is the cointegration rank
+vecm_model <- VECM(ds[,2:9], lag = lag_order, r = 5, include = "const", LRinclude = "none", estim = "ML")
+
+# Display results
+summary(vecm_model)
+
+# Obtain reduced-form impulse response functions
+irf_result <- irf(vecm_model, n.ahead = 15)
+
+# Plot impulse response functions
+plot(irf_result)
+
+fitted_values <- as.data.frame(fitted(vecm_model))
+
+# Plotting the fitted values
+par(mfrow = c(2, 4))  # Adjust the layout as needed
+for (i in 1:8) {
+  plot(fitted_values[, i], type = "l", col = "blue", main = paste("Fitted Values -", colnames(fitted_values)[i]))
+}
+#Plotting the residuals 
+residuals <- residuals(vecm_model)
+par(mfrow=c(2, 4)) # Change the layout as needed
+for (i in 1:8) {
+  plot(residuals[, i], type = "l", col = "blue", main = colnames(ds)[i])
+  abline(h = 0, col = "red", lty = 2)
+}
