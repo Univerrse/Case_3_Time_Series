@@ -101,9 +101,79 @@ pantula_test(ds$Y5,2)
 pantula_test(ds$Y7,2)
 pantula_test(ds$Y10,2)
 
-#Multiple or Panel Unit Root Tests
-boot_panel(ds[,2:9], bootstrap = "MBB")
-boot_ur(ds[,2:9], B = 399)
+### Pantula priniple using bootstrap adf
+#the same using the bootstrap ADF
+pantula_test_bootstrap <- function(series, max_order) {
+  d <- max_order
+  while (d > 0) {
+    # Perform bootstrap ADF test on d'th difference series using boot_adf function
+    test_result <- boot_adf(diff_mult(series,d), deterministics="intercept")
+    # Check if the null hypothesis of a unit root cannot be rejected
+    if (test_result$p.value <= 0.05) {
+      d <- d - 1
+    } else {
+      cat("Order of integration is", d+1, "\n")
+      break
+    }
+  }
+  if (d == 0){
+    test_result<-boot_adf(series,deterministics="intercept")
+    # Check if the null hypothesis of a unit root cannot be rejected
+    if (test_result$p.value <= 0.05) {
+      cat("Order of integration is", d, "\n")
+    } else {
+      cat("Order of integration is", d+1, "\n")
+    }} else{
+      break
+    }
+}
+
+pantula_test_bootstrap(ds$M3,2)
+pantula_test_bootstrap(ds$M6,2)
+pantula_test_bootstrap(ds$Y1,2)
+pantula_test_bootstrap(ds$Y2,2)
+pantula_test_bootstrap(ds$Y3,2)
+pantula_test_bootstrap(ds$Y5,2)
+pantula_test_bootstrap(ds$Y7,2)
+pantula_test_bootstrap(ds$Y10,2)
+
+#Pantula principle using union of rejections test
+pantula_test_UnionOfRejections <- function(series, max_order) {
+  d <- max_order
+  while (d > 0) {
+    # Perform union of rejections test on d'th difference series using union function
+    test_result <- boot_union(diff_mult(series,d))
+    # Check if the null hypothesis of a unit root cannot be rejected
+    if (test_result$p.value <= 0.05) {
+      d <- d - 1
+    } else {
+      cat("Order of integration is", d+1, "\n")
+      break
+    }
+  }
+  if (d == 0){
+    test_result<-boot_union(series)
+    # Check if the null hypothesis of a unit root cannot be rejected
+    if (test_result$p.value <= 0.05) {
+      cat("Order of integration is", d, "\n")
+    } else {
+      cat("Order of integration is", d+1, "\n")
+    }} else{
+      break
+    }
+}
+
+pantula_test_UnionOfRejections(ds$M3,2)
+pantula_test_UnionOfRejections(ds$M6,2)
+pantula_test_UnionOfRejections(ds$Y1,2)
+pantula_test_UnionOfRejections(ds$Y2,2)
+pantula_test_UnionOfRejections(ds$Y3,2)
+pantula_test_UnionOfRejections(ds$Y5,2)
+pantula_test_UnionOfRejections(ds$Y7,2)
+pantula_test_UnionOfRejections(ds$Y10,2)
+
+#Multiple unit root test
+boot_ur(ds[,2:9], union = TRUE)
 
 # Perform the trace Johansen test
 johansen_test <- ca.jo(ds[,2:9], type = "trace", K = 2, ecdet = "const", spec = "transitory")
