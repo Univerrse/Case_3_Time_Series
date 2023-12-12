@@ -1,1 +1,102 @@
 
+#install.packages('bootUR')
+#install.packages('statespacer')
+library(statespacer)
+library(ggplot2)
+library(gridExtra)
+
+####DATA EXPLORATION
+#take data from the package
+ds <- FedYieldCurve
+
+#Create graphs with ggplot for each sequence
+M3_graph <- ggplot(ds, aes(x = Month, y = M3)) +
+  geom_line() +
+  labs(title = "M3", x = "Month", y = "Interest")
+M6_graph <- ggplot(ds, aes(x = Month, y = M6)) +
+  geom_line() +
+  labs(title = "M6", x = "Month", y = "Interest")
+Y1_graph <- ggplot(ds, aes(x = Month, y = Y1)) +
+  geom_line() +
+  labs(title = "Y1", x = "Month", y = "Interest")
+Y2_graph <- ggplot(ds, aes(x = Month, y = Y2)) +
+  geom_line() +
+  labs(title = "Y2", x = "Month", y = "Interest")
+Y3_graph <- ggplot(ds, aes(x = Month, y = Y3)) +
+  geom_line() +
+  labs(title = "Y3", x = "Month", y = "Interest")
+Y5_graph <- ggplot(ds, aes(x = Month, y = Y5)) +
+  geom_line() +
+  labs(title = "Y5", x = "Month", y = "Interest")
+Y7_graph <- ggplot(ds, aes(x = Month, y = Y7)) +
+  geom_line() +
+  labs(title = "Y7", x = "Month", y = "Interest")
+Y10_graph <- ggplot(ds, aes(x = Month, y = Y10)) +
+  geom_line() +
+  labs(title = "Y10", x = "Month", y = "Interest")
+
+##Show multiple graphs together (remove #)
+grid.arrange(M3_graph,M6_graph,Y1_graph,Y2_graph,Y3_graph,Y5_graph,Y7_graph,Y10_graph)
+
+### From this plot, easy to see that non of the series are stationary.
+### However, they do seem to follow the same path, which can indicate cointegration
+### Check this by plotting all data together in a graph:
+
+
+###plot all data together in a graph (remove #)
+all_graph<-ggplot(ds, aes(x = Month, y= Interest)) +
+  geom_line(aes(y = M3, color="M3")) +
+  geom_line(aes(y = M6, color = "M6")) +
+  geom_line(aes(y = Y1, color = "Y1")) +
+  geom_line(aes(y = Y2, color = "Y2")) +
+  geom_line(aes(y = Y3, color = "Y3")) +
+  geom_line(aes(y = Y5, color = "Y5")) +
+  geom_line(aes(y = Y7, color = "Y7")) +
+  geom_line(aes(y = Y10, color = "Y10"))
+grid.arrange(all_graph)
+
+
+###PANTULA PRINCIPLE
+#install.packages(bootUR)
+library(bootUR)
+#Note that, this function works specifically for our case,
+#since we only include an intercept in all orders for all series.
+#If this is not the case, the function below needs to be adjusted.
+pantula_test <- function(series, max_order) {
+  d <- max_order
+  while (d > 0) {
+    # Perform ADF test on d'th difference series using adf function
+    test_result <- adf(diff_mult(series,d), deterministics="intercept")
+    # Check if the null hypothesis of a unit root can be rejected
+    if (test_result$p.value <= 0.05) {
+      d <- d - 1
+    } else {
+      cat("Order of integration is", d+1, "\n")
+      break
+    }
+  }
+  if (d == 0){
+    test_result<-adf(series, deterministics="intercept")
+    # Check if the null hypothesis of a unit root can be rejected
+    if (test_result$p.value <= 0.05) {
+      cat("Order of integration is", d, "\n") 
+    } else {
+      cat("Order of integration is", d+1, "\n")
+    }} else{
+      break
+    }
+}
+#The series for which the null is rejected in the
+#final stage (d=0) is classified as I(0).
+
+#perform pantula principle for all series
+#Note that we set max_order=2, since it is very rare
+#to have series of order 3 or higher
+pantula_test(ds$M3,2) 
+pantula_test(ds$M6,2) 
+pantula_test(ds$Y1,2) 
+pantula_test(ds$Y2,2) 
+pantula_test(ds$Y3,2)
+pantula_test(ds$Y5,2)
+pantula_test(ds$Y7,2)
+pantula_test(ds$Y10,2)
